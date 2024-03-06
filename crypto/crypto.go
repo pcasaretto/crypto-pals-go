@@ -4,6 +4,20 @@ import (
 	"encoding/hex"
 )
 
+func EncryptRepeatingXOR(input, key string) string {
+	// convert input and key to bytes
+	inputBytes := []byte(input)
+	keyBytes := []byte(key)
+
+	// XOR the input with the key
+	for i := range inputBytes {
+		inputBytes[i] ^= keyBytes[i%len(keyBytes)]
+	}
+
+	// convert bytes to hex
+	return hex.EncodeToString(inputBytes)
+}
+
 func BreakSingleByteXOR(input string) string {
 	// convert hex to bytes
 	bytes, err := hex.DecodeString(input)
