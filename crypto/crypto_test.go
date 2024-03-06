@@ -12,3 +12,12 @@ func TestFixedXOR(t *testing.T) {
 		t.Errorf("Expected %s, but got %s", expected, actual)
 	}
 }
+
+func TestBreakSingleByteXOR(t *testing.T) {
+	input := "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+	expected := "Cooking MC's like a pound of bacon"
+	actual := crypto.BreakSingleByteXOR(input)
+	if actual != expected {
+		t.Errorf("Expected %s, but got %s", expected, actual)
+	}
+}
