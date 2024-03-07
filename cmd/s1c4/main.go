@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/hex"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -11,19 +11,23 @@ import (
 )
 
 func main() {
-	input, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading from stdin: %v\n", err)
-		os.Exit(1)
-	}
-
-	scanner := bufio.NewScanner(strings.NewReader(string(input)))
+	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanLines)
 
-	candidates := make([]string, 0, len(input))
+	candidates := make([]string, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		candidates = append(candidates, crypto.BreakSingleByteXOR(line))
+		decoded, err := hex.DecodeString(line)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error decoding hex: %v\n", err)
+			os.Exit(1)
+		}
+		candidate, _ := crypto.BreakSingleByteXOR(decoded)
+		candidates = append(candidates, string(candidate))
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading from stdin: %v\n", err)
+		os.Exit(1)
 	}
 
 	best := bestCandidate(candidates)

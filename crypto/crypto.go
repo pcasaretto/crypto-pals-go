@@ -4,32 +4,39 @@ import (
 	"encoding/hex"
 )
 
-func EncryptRepeatingXOR(input, key string) string {
-	// convert input and key to bytes
+func EncryptRepeatingXOR(input, key []byte) []byte {
 	inputBytes := []byte(input)
-	keyBytes := []byte(key)
+	copy(inputBytes, input)
 
 	// XOR the input with the key
 	for i := range inputBytes {
-		inputBytes[i] ^= keyBytes[i%len(keyBytes)]
+		inputBytes[i] ^= key[i%len(key)]
 	}
 
-	// convert bytes to hex
-	return hex.EncodeToString(inputBytes)
+	return inputBytes
 }
 
-func BreakSingleByteXOR(input string) string {
-	// convert hex to bytes
-	bytes, err := hex.DecodeString(input)
-	if err != nil {
-		return ""
+func DecryptRepeatingXOR(input, key []byte) []byte {
+	// make a copy of the input
+	inputBytes := make([]byte, len(input))
+	copy(inputBytes, input)
+	// XOR the input with the key
+	for i := range inputBytes {
+		inputBytes[i] ^= key[i%len(key)]
 	}
 
+	return inputBytes
+}
+
+func BreakSingleByteXOR(input []byte) ([]byte, byte) {
+	// make a copy of the input
+	bytes := make([]byte, len(input))
+	copy(bytes, input)
 	// score each byte
 	var bestScore int
 	var bestByte byte
 	for b := 0; b < 256; b++ {
-		score := scoreXOR(bytes, byte(b))
+		score := scoreXOR(input, byte(b))
 		if score > bestScore {
 			bestScore = score
 			bestByte = byte(b)
@@ -41,8 +48,7 @@ func BreakSingleByteXOR(input string) string {
 		bytes[i] ^= bestByte
 	}
 
-	// convert bytes to string
-	return string(bytes)
+	return bytes, bestByte
 }
 
 func scoreXOR(bytes []byte, b byte) int {
@@ -94,4 +100,24 @@ func FixedXOR(hex1, hex2 string) string {
 
 	// convert bytes to hex
 	return hex.EncodeToString(bytes1)
+}
+
+func HammingDistance(b1, b2 []byte) int {
+	// XOR the bytes
+	var distance int
+	for i := range b1 {
+		distance += popCount(b1[i] ^ b2[i])
+	}
+
+	return distance
+}
+
+func popCount(b byte) int {
+	// count the number of bits set in a byte
+	var count int
+	for b != 0 {
+		count++
+		b &= b - 1
+	}
+	return count
 }

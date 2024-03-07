@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/pcasaretto/crypto-pals/crypto"
@@ -8,5 +9,7 @@ import (
 
 func main() {
 	input := "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
-	fmt.Println(crypto.EncryptRepeatingXOR(input, "ICE"))
+	text := crypto.EncryptRepeatingXOR([]byte(input), []byte("ICE"))
+	encoded := hex.EncodeToString(text)
+	fmt.Println(encoded)
 }

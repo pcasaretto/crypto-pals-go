@@ -1,7 +1,7 @@
 {
   description = "";
   # Nixpkgs / NixOS version to use.
-  inputs.nixpkgs.url = "nixpkgs/nixos-23.05";
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }:
     let
@@ -27,26 +27,7 @@
           with pkgs;
         {
           default = mkShell {
-            inputsFrom = builtins.attrValues self.packages.${system};
-            buildInputs = [gopls gotools go-tools];
-          };
-
-        });
-
-      packages = forAllSystems (system:
-        let
-          pkgs = nixpkgsFor.${system};
-        in
-          with pkgs;
-        {
-          default = buildGoModule {
-            pname = "dotenv";
-            inherit version;
-            # In 'nix develop', we don't need a copy of the source tree
-            # in the Nix store.
-            src = ./.;
-
-            vendorSha256 = "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=";
+            buildInputs = [pkgs.go_1_22 gopls gotools go-tools];
           };
 
         });
