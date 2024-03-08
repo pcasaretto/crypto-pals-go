@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/exp/maps"
 
+	"github.com/pcasaretto/crypto-pals/bytes"
 	"github.com/pcasaretto/crypto-pals/crypto"
 )
 
@@ -31,7 +32,7 @@ func main() {
 	keys := make([]CandidateKey, 0)
 
 	for keysize := 2; keysize <= 40; keysize++ {
-		chunks := chunk(input, keysize, 4)
+		chunks := bytes.Chunk(input, keysize, 4)
 		normalized := normalize(chunks)
 		keys = append(keys, CandidateKey{Length: keysize, Normalized: normalized})
 	}
@@ -48,7 +49,7 @@ func main() {
 	var decrypted []byte
 
 	for _, key := range keys[:5] {
-		chunks := chunk(input, key.Length, 0)
+		chunks := bytes.Chunk(input, key.Length, 0)
 		transposed := transpose(chunks)
 
 		key := make([]byte, key.Length)
@@ -167,22 +168,6 @@ func transpose(chunks [][]byte) [][]byte {
 		}
 	}
 	return transposed
-}
-
-func chunk(input []byte, size int, n int) [][]byte {
-	if n == 0 {
-		n = len(input)/size + 1
-	}
-	chunks := make([][]byte, 0, len(input)/size)
-	for i := 0; i < n; i++ {
-		start := i * size
-		end := start + size
-		if end > len(input) {
-			end = len(input)
-		}
-		chunks = append(chunks, input[start:end])
-	}
-	return chunks
 }
 
 func normalize(chunks [][]byte) float64 {
