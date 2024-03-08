@@ -3,6 +3,9 @@ package bytes
 func Chunk(input []byte, size int, n int) [][]byte {
 	if n == 0 {
 		n = len(input) / size
+		if len(input)%size != 0 {
+			n++
+		}
 	}
 	chunks := make([][]byte, 0, len(input)/size)
 	for i := 0; i < n; i++ {
